@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import userRouter from './routes/user.route.js';
+import session from "express-session";
 // import path from "path";
 
 console.log("inside the app.js file");
@@ -24,6 +25,18 @@ app.use(cors({
     // credentials:true
 }))
 
+app.use(
+    session({
+        secret: process.env.SESSION_SECRET || "Iwn3q3HkVF",
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 24 * 60 * 60 * 1000, // 1 day
+        },
+    })
+);
 app.use(express.json({
     limit:"16kb"              // backend or server per jo date aaa raha hain vo json format me aa sakta hain aur uski limit 16kb
 }))

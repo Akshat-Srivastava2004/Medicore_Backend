@@ -2,7 +2,7 @@ import mongoose ,{Schema}from "mongoose";
 
 
 const AppointmentSchema=new Schema({
-    patient:{
+    Patient:{
         type:Schema.Types.ObjectId,
         ref:"Patient",
         require:true
@@ -20,13 +20,9 @@ const AppointmentSchema=new Schema({
            type:String,
            require:true,
     },
-    prescription:{
+    Prescription:{
         type:String,
         require:false,
-    },
-    Attend:{
-        type:Boolean,
-        default:false
     },
     status: {
         type: String,

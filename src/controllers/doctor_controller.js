@@ -4,6 +4,8 @@ import { asyncHandler } from "../util/asyncHandler.js";
 import { uploadOnCloudinary } from "../util/cloudinary.js";
 // import { Postuser } from "./post.controller.js";
 import { Doctor } from "../models/doctor_model.js";
+import { Patient } from "../models/patient_model.js";
+import { Appointment } from "../models/appointment_model.js";
 import nodemailer from "nodemailer"
                                  // REGISTERING THE USER //
 
@@ -121,7 +123,10 @@ const logindoctor=(async(req,res)=>{
      const loggedInUser=await Doctor.findById(user._id)
     //  select({ password: 0, refreshToken: 0 });
      console.log(loggedInUser)
- 
+     req.session.doctor = {
+        id: user._id,
+        name: user.Name,
+    };
      const options={
          httpOnly:true,
          secure:true
@@ -137,4 +142,78 @@ const logindoctor=(async(req,res)=>{
      
 })
 
-export {Doctorregister,logindoctor}
+
+const doctoredit = async (req, res) => {
+    const { Patientname, Prescription, status } = req.body;
+    console.log(Patientname,Prescription,status)
+    // Input validation
+    if (!Patientname) {
+        throw new ApiError(400, "Patient name is required");
+    }
+    if (!Prescription) {
+        throw new ApiError(400, "Prescription is required for the patient");
+    }
+
+    // Check if the patient exists
+    const checkpatient = await Patient.findOne({ Name: Patientname });
+    if (!checkpatient) {
+        throw new ApiError(400, "Patient not found in the database");
+    }
+
+    const checkpatientappointment = await Appointment.findOne({ Patient: checkpatient._id });
+    if (!checkpatientappointment) {
+        throw new ApiError(400, "Patient appointment is not scheduled yet");
+    }
+
+    // Update the appointment
+    const appointmentupdate = await Appointment.updateOne(
+        { _id: checkpatientappointment._id }, // Filter
+        { $set: { Prescription, status } }    // Update
+    );
+
+    res.status(200).json({
+        success: true,
+        message: "Appointment updated successfully",
+        data: appointmentupdate,
+    });
+};
+
+
+
+
+
+const doctoreditmeetinglink = async (req, res) => {
+    const { Patientname, meetinglink } = req.body;
+
+    // Input validation
+    if (!Patientname) {
+        throw new ApiError(400, "Patient name is required");
+    }
+    if (!meetinglink) {
+        throw new ApiError(400, "Meeting link is required for the patient");
+    }
+
+    // Check if the patient exists
+    const checkpatient = await Patient.findOne({ Name: Patientname });
+    if (!checkpatient) {
+        throw new ApiError(400, "Patient not found in the database");
+    }
+
+    const checkpatientappointment = await Appointment.findOne({ Patient: checkpatient._id });
+    if (!checkpatientappointment) {
+        throw new ApiError(400, "Patient appointment is not scheduled yet");
+    }
+
+    // Update the meeting link
+    const appointmentupdate = await Appointment.updateOne(
+        { _id: checkpatientappointment._id }, // Filter
+        { $set: { meetinglink } }             // Update
+    );
+
+    res.status(200).json({
+        success: true,
+        message: "Appointment meeting link updated successfully",
+        data: appointmentupdate,
+    });
+};
+export {Doctorregister,logindoctor,doctoredit,doctoreditmeetinglink}
