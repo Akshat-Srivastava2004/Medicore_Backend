@@ -45,7 +45,44 @@ const Appointmentschedule=asyncHandler(async(req,res)=>{
             data: newAppointment,
         });
 })
+const appointmentdetails=(async(req,res)=>{
+    try {
+        const {patientname}=req.body
+        console.log("the patient details are here ",patientname)
+        const patientexist=await Patient.findOne({Name:patientname})
+        if(!patientexist){
+            throw new ApiError(400,"patient does not exist")
+        }
+        const patientid=patientexist._id;
+    
+        const appointmentexist=await Appointment.findOne({Patient:patientid})
+        if(!appointmentexist){
+            throw new ApiError(400,"Appointment does not exist ")
+        }
+        const doctorid=appointmentexist.Doctor;
+        const doctorname=await Doctor.findOne({_id:doctorid})
+        console.log("the doctorname is ",doctorname)
+        const appointmentdetails={
+            Patient:patientexist.Name,
+            Doctor:doctorname.Name,
+            appointmentDate:appointmentexist.appointmentDate,
+            meetinglink:appointmentexist.meetinglink,
+            Prescription:appointmentexist.Prescription,
+            status:appointmentexist.status
+        }
+        console.log("the appointment details are here ",appointmentdetails)
+        res.status(201).json({
+            success:true,
+            message:"Appointment details successfully accesed",
+            data:appointmentdetails
+        })
+    } catch (error) {
+        res.status(error.statusCode || 500).json({
+            success: false,
+            message: error.message || "An error occurred",
+        });
+    }    
+})
 
 
-
-export {Appointmentschedule}
+export {Appointmentschedule,appointmentdetails}

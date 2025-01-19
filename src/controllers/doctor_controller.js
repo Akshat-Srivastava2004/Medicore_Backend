@@ -131,20 +131,134 @@ const logindoctor=(async(req,res)=>{
          httpOnly:true,
          secure:true
      }
-
+     const doctorname=Name;
 
                                 // SENDING THE TOKEN IN THE COOKIES//
                                 
      return res
      .status(200).cookie("accessToken",accessToken,options)
      .cookie("refreshToken",refreshToken,options)
-     .json({"Doctor login successfully":true})
+     .json({
+        message:"Login successfully",
+        data:doctorname
+     })
      
 })
 
+const patientbydoctor=(async(req,res)=>{
+    const {doctorname}=req.body;
+    console.log("the doctor name is ",doctorname)
+    try {
+        const doctorexist=await Doctor.findOne({Name:doctorname})
+        if(!doctorexist){
+            throw new ApiError(401,"doctor does not exist")
+        }
+        const doctorid=doctorexist._id;
+        const doctorexistinappointment=await Appointment.findOne({Doctor:doctorid})
+        if(!doctorexistinappointment){
+            throw new ApiError(401,"doctor doesnt have any patient")
+        }
+        const patientid=doctorexistinappointment.Patient;
+       
+        if(!patientid){
+            throw new ApiError(401,"patiend id not found  ")
+        }
+        const patientexist=await Patient.findOne({_id:patientid})
+        if(!patientexist){
+            throw new ApiError(401,"Patient does not exist ")
+        }
+
+        const patientdetails={
+            Patient:patientexist.Name,
+            Email:patientexist.Email,
+            Bloodgroup:patientexist.Bloodgroup,
+            Phonenumber:patientexist.Phonenumber,
+            Pastreport:patientexist.PastReport
+        }
+        console.log("here is the patientdetails",patientdetails)
+        res.status(200).json({
+            success: true,
+            message: "Patient details retrieved successfully",
+            data: patientdetails,
+        });
+    } catch (error) {
+        res.status(error.statusCode || 500).json({
+            success: false,
+            message: error.message || "An error occurred",
+        });
+    }
+})
+const appointmentdoctor=(async(req,res)=>{
+    try {
+        const {doctorname}=req.body
+        const doctorexist=await Doctor.findOne({Name:doctorname})
+        if(!doctorexist){
+            throw new ApiError(401,"doctor does not exist")
+        }
+        const doctorid=doctorexist._id;
+        const doctorexistinappointment=await Appointment.findOne({Doctor:doctorid})
+        if(!doctorexistinappointment){
+            throw new ApiError(401,"doctor doesnt have any patient")
+        }
+        const patient=doctorexistinappointment.Patient;
+        const patientname=await Patient.findOne({_id:patient})
+        const appointmentdetails={
+            Patient:patientname.Name,
+            Doctor:doctorexist.Name,
+            appointmentDate:doctorexistinappointment.appointmentDate,
+            meetinglink:doctorexistinappointment.meetinglink,
+            Prescription:doctorexistinappointment.Prescription,
+            status:doctorexistinappointment.status
+        }
+        res.status(200).json({
+            success: true,
+            message: "Appointment details retrieved successfully",
+            data: appointmentdetails,
+        });
+    } catch (error) {
+        res.status(error.statusCode || 500).json({
+            success: false,
+            message: error.message || "An error occurred",
+        });
+    }
+})
+const doctordetail = async (req, res) => {
+    try {
+        // Extract patient name from the request body
+        const { doctorname } = req.body;
+        console.log("The doctor name is ", doctorname);
+
+        // Check if the patient exists in the database
+        const checkdoctorexist = await Doctor.findOne({ Name: doctorname });
+
+        if (!checkdoctorexist) {
+            throw new ApiError(400, "Patient is not found in the database");
+        }
+
+        // Retrieve all details of the patient
+        const doctorDetails = {
+            Name:  checkdoctorexist.Name,
+            Email:  checkdoctorexist.Email,
+            PhoneNumber:  checkdoctorexist.Phonenumber,
+            Specialization: checkdoctorexist.Specialization,
+            Profilephoto: checkdoctorexist.Profilephoto,
+        };
+        
+        res.status(200).json({
+            success: true,
+            message: "doctor details retrieved successfully",
+            data: doctorDetails,
+        });
+    } catch (error) {
+        res.status(error.statusCode || 500).json({
+            success: false,
+            message: error.message || "An error occurred",
+        });
+    }
+};
 
 const doctoredit = async (req, res) => {
-    const { Patientname, Prescription, status } = req.body;
+    const { meetinglink,Patientname, Prescription, status } = req.body;
     console.log(Patientname,Prescription,status)
     // Input validation
     if (!Patientname) {
@@ -153,7 +267,9 @@ const doctoredit = async (req, res) => {
     if (!Prescription) {
         throw new ApiError(400, "Prescription is required for the patient");
     }
-
+   if(!meetinglink){
+    throw new ApiError(400,"meeting link is required")
+   }
     // Check if the patient exists
     const checkpatient = await Patient.findOne({ Name: Patientname });
     if (!checkpatient) {
@@ -168,7 +284,9 @@ const doctoredit = async (req, res) => {
     // Update the appointment
     const appointmentupdate = await Appointment.updateOne(
         { _id: checkpatientappointment._id }, // Filter
-        { $set: { Prescription, status } }    // Update
+        { $set: { meetinglink,Prescription, status } },
+           // Update
+
     );
 
     res.status(200).json({
@@ -183,7 +301,7 @@ const doctoredit = async (req, res) => {
 
 
 const doctoreditmeetinglink = async (req, res) => {
-    const { Patientname, meetinglink } = req.body;
+    const { Patientname, meetinglink, } = req.body;
 
     // Input validation
     if (!Patientname) {
@@ -216,4 +334,4 @@ const doctoreditmeetinglink = async (req, res) => {
         data: appointmentupdate,
     });
 };
-export {Doctorregister,logindoctor,doctoredit,doctoreditmeetinglink}
+export {Doctorregister,logindoctor,doctoredit,doctoreditmeetinglink,doctordetail,patientbydoctor,appointmentdoctor}

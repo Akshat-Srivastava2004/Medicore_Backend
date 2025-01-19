@@ -23,6 +23,7 @@ const AppointmentSchema=new Schema({
     Prescription:{
         type:String,
         require:false,
+        default:"Attend the appointment first "
     },
     status: {
         type: String,

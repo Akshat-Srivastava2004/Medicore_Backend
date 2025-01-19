@@ -126,15 +126,54 @@ const loginpatient=(async(req,res)=>{
          httpOnly:true,
          secure:true
      }
-
-
+     const patientname=Name;
+     
                                 // SENDING THE TOKEN IN THE COOKIES//
                                 
      return res
      .status(200).cookie("accessToken",accessToken,options)
      .cookie("refreshToken",refreshToken,options)
-     .json({"Patient login successfully":true})
+     .json({
+        message:"Login successfully",
+        data:patientname
+     })
      
 })
+const patientdetail = async (req, res) => {
+    try {
+        // Extract patient name from the request body
+        const { patientname } = req.body;
+        console.log("The patient name is ", patientname);
 
-export {Patientregister,loginpatient}
+        // Check if the patient exists in the database
+        const checkpatientexist = await Patient.findOne({ Name: patientname });
+
+        if (!checkpatientexist) {
+            throw new ApiError(400, "Patient is not found in the database");
+        }
+
+        // Retrieve all details of the patient
+        const patientDetails = {
+            Name: checkpatientexist.Name,
+            Email: checkpatientexist.Email,
+            PhoneNumber: checkpatientexist.Phonenumber,
+            BloodGroup: checkpatientexist.Bloodgroup,
+            PastReport: checkpatientexist.PastReport,
+        };
+
+        // Send response with patient details
+        res.status(200).json({
+            success: true,
+            message: "Patient details retrieved successfully",
+            data: patientDetails,
+        });
+    } catch (error) {
+        // Handle errors
+        res.status(error.statusCode || 500).json({
+            success: false,
+            message: error.message || "An error occurred",
+        });
+    }
+};
+
+export {Patientregister,loginpatient,patientdetail}
