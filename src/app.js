@@ -45,6 +45,6 @@ app.use(express.urlencoded({
 
 app.use(cookieParser())             
 
-app.use("/api/v1/users", userRouter);
+app.use("https://medicore-backend.onrender.com", userRouter);
 
 export { app };
