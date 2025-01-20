@@ -20,7 +20,7 @@ const app=express()
 
 // Socket.IO connection handling
 
-app.use(cors())
+// app.use(cors())
 
 app.use(
     session({
@@ -45,6 +45,8 @@ app.use(express.urlencoded({
 
 app.use(cookieParser())             
 
-app.use("https://medicore-backend.onrender.com", userRouter);
-
+// app.use("https://medicore-backend.onrender.com", userRouter);
+app.use(cors({
+    origin: 'https://medicore-backend.onrender.com'
+  }), userRouter);
 export { app };
