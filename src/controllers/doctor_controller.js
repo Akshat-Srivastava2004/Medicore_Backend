@@ -197,63 +197,63 @@ const patientbydoctor = async (req, res) => {
 };
 
 const appointmentdoctor = async (req, res) => {
-    try {
-      const { doctorname } = req.body;
-  
-      // Check if the doctor exists
-      const doctorexist = await Doctor.findOne({ Name: doctorname });
-      if (!doctorexist) {
-        throw new ApiError(401, "Doctor does not exist");
-      }
-  
-      const doctorid = doctorexist._id;
-  
-      // Find all appointments for the doctor
-      const appointments = await Appointment.find({ Doctor: doctorid });
-      if (!appointments || appointments.length === 0) {
-        throw new ApiError(401, "Doctor does not have any appointments");
-      }
-  
-      // Fetch patient details for each appointment
-      const appointmentDetails = await Promise.all(
-        appointments.map(async (appointment) => {
-          const patient = await Patient.findOne({ _id: appointment.Patient });
-  
-          if (!patient) {
-            return {
-              Patient: "Unknown Patient",
-              Doctor: doctorexist.Name,
-              appointmentDate: appointment.appointmentDate,
-              meetinglink: appointment.meetinglink,
-              Prescription: appointment.Prescription,
-              status: appointment.status,
-            };
-          }
-  
+  try {
+    const { doctorname } = req.body;
+
+    // Check if the doctor exists
+    const doctorexist = await Doctor.findOne({ Name: doctorname });
+    if (!doctorexist) {
+      throw new ApiError(401, "Doctor does not exist");
+    }
+
+    const doctorid = doctorexist._id;
+
+    // Find all appointments for the doctor
+    const appointments = await Appointment.find({ Doctor: doctorid });
+    if (!appointments || appointments.length === 0) {
+      throw new ApiError(401, "Doctor does not have any appointments");
+    }
+
+    // Fetch patient details for each appointment
+    const appointmentDetails = await Promise.all(
+      appointments.map(async (appointment) => {
+        const patient = await Patient.findOne({ _id: appointment.Patient });
+
+        if (!patient) {
           return {
-            Patient: patient.Name,
+            Patient: "Unknown Patient",
             Doctor: doctorexist.Name,
             appointmentDate: appointment.appointmentDate,
             meetinglink: appointment.meetinglink,
             Prescription: appointment.Prescription,
             status: appointment.status,
           };
-        })
-      );
-  
-      res.status(200).json({
-        success: true,
-        message: "Appointments retrieved successfully",
-        data: appointmentDetails,
-      });
-    } catch (error) {
-      res.status(error.statusCode || 500).json({
-        success: false,
-        message: error.message || "An error occurred",
-      });
-    }
-  };
-  
+        }
+
+        return {
+          Patient: patient.Name,
+          Doctor: doctorexist.Name,
+          appointmentDate: appointment.appointmentDate,
+          meetinglink: appointment.meetinglink,
+          Prescription: appointment.Prescription,
+          status: appointment.status,
+        };
+      })
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Appointments retrieved successfully",
+      data: appointmentDetails,
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "An error occurred",
+    });
+  }
+};
+
 const doctordetail = async (req, res) => {
     try {
         // Extract patient name from the request body
