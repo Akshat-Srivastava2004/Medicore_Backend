@@ -2,7 +2,7 @@ import { Router } from "express";
 import { Patientregister,loginpatient, patientdetail } from "../controllers/patient_controller.js";
 import { upload } from "../middleware/multer.middleware.js";
 import { doctordetail, doctoredit, doctoreditmeetinglink, Doctorregister,logindoctor, patientbydoctor,appointmentdoctor} from "../controllers/doctor_controller.js";
-import { Adminregister,loginAdmin } from "../controllers/admin_controller.js";
+import { Adminregister,deleteDoctor,deletePatient,deleteStaff,getalldoctor,getallpatient,getallstaff,loginAdmin, updateDoctor, updatePatient, updateStaff } from "../controllers/admin_controller.js";
 import { loginStaff, Staffregister } from "../controllers/staff_controller.js";
 import { appointmentdetails, Appointmentschedule } from "../controllers/appointment_controller.js";
 
@@ -44,4 +44,14 @@ router.route("/doctordetail").post(doctordetail)
 router.route("/appointmentdetails").post(appointmentdetails)
 router.route("/doctorpanelpatientdetails").post(patientbydoctor)
 router.route("/doctorappointment").post(appointmentdoctor)
+router.route("/patientdelete/:id").delete(deletePatient)
+router.route("/doctordelete/:id").delete(deleteDoctor)
+router.route("/staffdelete/:id").delete(deleteStaff)
+router.route("/updatepatient").put(updatePatient)
+router.route("/updatedoctor").put(updateDoctor)
+router.route("/updatedstaff").put(updateStaff)
+router.route("/getallpatient").get(getallpatient)
+router.route("/getalldoctor").get(getalldoctor)
+router.route("/getallstaff").get(getallstaff)
+
 export default router

@@ -85,4 +85,4 @@ const appointmentdetails=(async(req,res)=>{
 })
 
 
-export {Appointmentschedule,appointmentdetails}
+export {Appointmentschedule,appointmentdetails,}

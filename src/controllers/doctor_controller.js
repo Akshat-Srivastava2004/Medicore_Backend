@@ -145,41 +145,48 @@ const logindoctor=(async(req,res)=>{
      
 })
 
-const patientbydoctor=(async(req,res)=>{
-    const {doctorname}=req.body;
-    console.log("the doctor name is ",doctorname)
+const patientbydoctor = async (req, res) => {
+    const { doctorname } = req.body;
+    console.log("The doctor name is ", doctorname);
+
     try {
-        const doctorexist=await Doctor.findOne({Name:doctorname})
-        if(!doctorexist){
-            throw new ApiError(401,"doctor does not exist")
-        }
-        const doctorid=doctorexist._id;
-        const doctorexistinappointment=await Appointment.findOne({Doctor:doctorid})
-        if(!doctorexistinappointment){
-            throw new ApiError(401,"doctor doesnt have any patient")
-        }
-        const patientid=doctorexistinappointment.Patient;
-       
-        if(!patientid){
-            throw new ApiError(401,"patiend id not found  ")
-        }
-        const patientexist=await Patient.findOne({_id:patientid})
-        if(!patientexist){
-            throw new ApiError(401,"Patient does not exist ")
+        // Find the doctor by name
+        const doctorexist = await Doctor.findOne({ Name: doctorname });
+        if (!doctorexist) {
+            throw new ApiError(401, "Doctor does not exist");
         }
 
-        const patientdetails={
-            Patient:patientexist.Name,
-            Email:patientexist.Email,
-            Bloodgroup:patientexist.Bloodgroup,
-            Phonenumber:patientexist.Phonenumber,
-            Pastreport:patientexist.PastReport
+        const doctorid = doctorexist._id;
+
+        // Find all appointments for the doctor
+        const appointments = await Appointment.find({ Doctor: doctorid });
+        if (appointments.length === 0) {
+            throw new ApiError(401, "Doctor doesn't have any patients");
         }
-        console.log("here is the patientdetails",patientdetails)
+
+        // Extract all patient IDs from the appointments
+        const patientIds = appointments.map(appointment => appointment.Patient);
+
+        // Fetch all patient details using their IDs
+        const patients = await Patient.find({ _id: { $in: patientIds } });
+        if (patients.length === 0) {
+            throw new ApiError(401, "No patients found");
+        }
+
+        // Format patient details
+        const patientDetails = patients.map(patient => ({
+            Name: patient.Name,
+            Email: patient.Email,
+            Bloodgroup: patient.Bloodgroup,
+            Phonenumber: patient.Phonenumber,
+            Pastreport: patient.PastReport,
+        }));
+
+        console.log("Here are the patient details", patientDetails);
         res.status(200).json({
             success: true,
             message: "Patient details retrieved successfully",
-            data: patientdetails,
+            data: patientDetails,
         });
     } catch (error) {
         res.status(error.statusCode || 500).json({
@@ -187,7 +194,8 @@ const patientbydoctor=(async(req,res)=>{
             message: error.message || "An error occurred",
         });
     }
-})
+};
+
 const appointmentdoctor=(async(req,res)=>{
     try {
         const {doctorname}=req.body

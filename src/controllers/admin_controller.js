@@ -4,6 +4,9 @@ import { asyncHandler } from "../util/asyncHandler.js";
 import { uploadOnCloudinary } from "../util/cloudinary.js";
 // import { Postuser } from "./post.controller.js"
 import { Admin } from "../models/admin_model.js";
+import {Patient} from "../models/patient_model.js"
+import {Doctor} from "../models/doctor_model.js"
+import { Staff } from "../models/staff_model.js";
 import nodemailer from "nodemailer"
                                  // REGISTERING THE USER //
 
@@ -123,6 +126,178 @@ const loginAdmin=(async(req,res)=>{
      .json({"Admin login successfully":true})
      
 })
+const getallpatient = async (req, res) => {
+    try {
+        // Assuming you have a Mongoose model named 'Patient'
+        const patients = await Patient.find({}, { 
+            Name: 1, 
+            Email: 1, 
+            Phonenumber: 1, 
+            Password: 1, 
+            Bloodgroup: 1, 
+            PastReport: 0
+        }); // Specify fields to include
 
-export {Adminregister,loginAdmin}
+        res.status(200).json({
+            success: true,
+            data: patients
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch patient details",
+            error: error.message
+        });
+    }
+};
+
+const getalldoctor = async (req, res) => {
+    try {
+        // Assuming you have a Mongoose model named 'Patient'
+        const doctors = await Doctor.find({}, { 
+            Name: 1, 
+            Email: 1, 
+            Phonenumber: 1, 
+            Password: 1, 
+            Specialization: 1, 
+            Profilephoto: 0
+        }); // Specify fields to include
+
+        res.status(200).json({
+            success: true,
+            data: doctors
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch doctors details",
+            error: error.message
+        });
+    }
+};
+const getallstaff = async (req, res) => {
+    try {
+        // Assuming you have a Mongoose model named 'Patient'
+        const staff = await Staff.find({}, { 
+            Name: 1, 
+            Email: 1, 
+            Phonenumber: 1, 
+            Password: 0, 
+            Adharcard: 1, 
+            Department: 1
+        }); // Specify fields to include
+
+        res.status(200).json({
+            success: true,
+            data:staff 
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch staff details",
+            error: error.message
+        });
+    }
+};
+const deletePatient = async (req, res) => {
+    try {
+        const { Email } = req.body; // Assuming the ID is passed as a route parameter
+        const findPatient = await Patient.findOne({Email:Email});
+        const id=findPatient._id;
+        const deletedPatient = await Patient.findByIdAndDelete(id);
+
+        if (!deletedPatient) {
+            return res.status(404).json({ success: false, message: "Patient not found" });
+        }
+
+        res.status(200).json({ success: true, message: "Patient deleted successfully", data: deletedPatient });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Error deleting patient", error: error.message });
+    }
+};
+const deleteStaff = async (req, res) => {
+    try {
+        const { Email } = req.params;
+        const findstaff = await Staff.findOne({Email:Email});
+        const id=findstaff._id;
+        const deletedStaff = await Staff.findByIdAndDelete(id);
+
+        if (!deletedStaff) {
+            return res.status(404).json({ success: false, message: "Staff not found" });
+        }
+
+        res.status(200).json({ success: true, message: "Staff deleted successfully", data: deletedStaff });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Error deleting staff", error: error.message });
+    }
+};
+const deleteDoctor = async (req, res) => {
+    try {
+        const { Email } = req.params;
+        const Finddoctor=await Doctor.findOne({Email:Email})
+        const id=Finddoctor._id;
+        const deletedDoctor = await Doctor.findByIdAndDelete(id);
+
+        if (!deletedDoctor) {
+            return res.status(404).json({ success: false, message: "Doctor not found" });
+        }
+
+        res.status(200).json({ success: true, message: "Doctor deleted successfully", data: deletedDoctor });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Error deleting doctor", error: error.message });
+    }
+};
+const updatePatient = async (req, res) => {
+    try {
+        
+        const {updatedData,Email} = req.body;
+        const findPatient = await Patient.findOne({Email:Email});
+        const id=findPatient._id;
+        const updatedPatient = await Patient.findByIdAndUpdate(id, updatedData, { new: true, runValidators: true });
+
+        if (!updatedPatient) {
+            return res.status(404).json({ success: false, message: "Patient not found" });
+        }
+
+        res.status(200).json({ success: true, message: "Patient updated successfully", data: updatedPatient });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Error updating patient", error: error.message });
+    }
+};
+const updateStaff = async (req, res) => {
+    try {
+        
+        const {updatedData,Email} = req.body;
+        const findstaff = await Staff.findOne({Email:Email});
+        const id=findstaff._id;
+        const updatedStaff = await Staff.findByIdAndUpdate(id, updatedData, { new: true, runValidators: true });
+
+        if (!updatedStaff) {
+            return res.status(404).json({ success: false, message: "Staff not found" });
+        }
+
+        res.status(200).json({ success: true, message: "Staff updated successfully", data: updatedStaff });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Error updating staff", error: error.message });
+    }
+};
+const updateDoctor = async (req, res) => {
+    try {
+        
+        const {updatedData,Email} = req.body;
+        const Finddoctor=await Doctor.findOne({Email:Email})
+        const id=Finddoctor._id;
+        const updatedDoctor = await Doctor.findByIdAndUpdate(id, updatedData, { new: true, runValidators: true });
+
+        if (!updatedDoctor) {
+            return res.status(404).json({ success: false, message: "Doctor not found" });
+        }
+
+        res.status(200).json({ success: true, message: "Doctor updated successfully", data: updatedDoctor });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Error updating doctor", error: error.message });
+    }
+};
+
+export {Adminregister,loginAdmin,getallpatient,getalldoctor,getallstaff,deleteDoctor,deletePatient,deleteStaff,updateDoctor,updateStaff,updatePatient}
 
