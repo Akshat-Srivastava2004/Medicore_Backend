@@ -55,6 +55,6 @@ router.route("/updatedstaff").put(updateStaff)
 router.route("/getallpatient").get(getallpatient)
 router.route("/getalldoctor").get(getalldoctor)
 router.route("/getallstaff").get(getallstaff)
-router.route("/logout").get(checklogout,userlogout)
+router.route("/logout").post(checklogout,userlogout)
 
 export default router
