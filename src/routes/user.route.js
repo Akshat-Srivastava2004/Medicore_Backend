@@ -5,6 +5,8 @@ import { doctordetail, doctoredit, doctoreditmeetinglink, Doctorregister,logindo
 import { Adminregister,deleteDoctor,deletePatient,deleteStaff,getalldoctor,getallpatient,getallstaff,loginAdmin, updateDoctor, updatePatient, updateStaff } from "../controllers/admin_controller.js";
 import { loginStaff, Staffregister } from "../controllers/staff_controller.js";
 import { appointmentdetails, Appointmentschedule } from "../controllers/appointment_controller.js";
+import { checklogout } from "../middleware/authenitcation.middleware.js";
+import { userlogout } from "../controllers/logout_controller.js";
 
 const router=Router()
 router.route("/Patientregister").post(
@@ -53,5 +55,6 @@ router.route("/updatedstaff").put(updateStaff)
 router.route("/getallpatient").get(getallpatient)
 router.route("/getalldoctor").get(getalldoctor)
 router.route("/getallstaff").get(getallstaff)
+router.route("/logout").get(checklogout,userlogout)
 
 export default router
