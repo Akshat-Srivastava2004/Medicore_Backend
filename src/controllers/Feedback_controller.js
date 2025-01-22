@@ -3,13 +3,13 @@ import { ApiError } from "../util/ApiError.js";
 
 const Feedbackbypatient=async(req,res)=>{
     const {patientname,message}=req.body
-    if(!Patientname){
+    if(!patientname){
         throw new ApiError(401,"Patient should be registered first ")
     }
     if(!message){
         throw new ApiError(401,"message is required ")
     }
-    const Patientname=patientname;
+    const Patient=patientname;
     const Message=message;
     const feedback=await Feedback.create({
         Patient,
