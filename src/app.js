@@ -50,6 +50,7 @@ app.use(cors({
     origin: ['https://medicalrecommendation.netlify.app', 'http://localhost:3000'], // Allow these origins
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+    credentials: true, // Allow credentials
 }));
   // Routes
   app.use("/api/v1/users", userRouter);
