@@ -5,8 +5,8 @@ import { doctordetail, doctoredit, doctoreditmeetinglink, Doctorregister,logindo
 import { Adminregister,deleteDoctor,deletePatient,deleteStaff,getalldoctor,getallpatient,getallstaff,loginAdmin, updateDoctor, updatePatient, updateStaff } from "../controllers/admin_controller.js";
 import { loginStaff, Staffregister } from "../controllers/staff_controller.js";
 import { appointmentdetails, Appointmentschedule } from "../controllers/appointment_controller.js";
-import { checklogout } from "../middleware/authenitcation.middleware.js";
-import { logoutUser, userlogout } from "../controllers/logout_controller.js";
+// import { checklogout } from "../middleware/authenitcation.middleware.js";
+import { logoutUser } from "../controllers/logout_controller.js";
 
 const router=Router()
 router.route("/Patientregister").post(
