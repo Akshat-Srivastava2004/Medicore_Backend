@@ -7,6 +7,7 @@ import { loginStaff, Staffregister } from "../controllers/staff_controller.js";
 import { appointmentdetails, Appointmentschedule } from "../controllers/appointment_controller.js";
 // import { checklogout } from "../middleware/authenitcation.middleware.js";
 import { logoutUser } from "../controllers/logout_controller.js";
+import { Feedback } from "../controllers/Feedback_controller.js";
 
 const router=Router()
 router.route("/Patientregister").post(
@@ -56,5 +57,6 @@ router.route("/getallpatient").get(getallpatient)
 router.route("/getalldoctor").get(getalldoctor)
 router.route("/getallstaff").get(getallstaff)
 router.route("/logout").post(logoutUser)
+router.route("/feedback").post(Feedback)
 
 export default router
