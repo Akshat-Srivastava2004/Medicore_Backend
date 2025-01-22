@@ -8,6 +8,7 @@ import { appointmentdetails, Appointmentschedule } from "../controllers/appointm
 // import { checklogout } from "../middleware/authenitcation.middleware.js";
 import { logoutUser } from "../controllers/logout_controller.js";
 import { Feedbackbypatient } from "../controllers/Feedback_controller.js";
+import { Contactrandom } from "../controllers/contact_controller.js";
 
 const router=Router()
 router.route("/Patientregister").post(
@@ -58,5 +59,6 @@ router.route("/getalldoctor").get(getalldoctor)
 router.route("/getallstaff").get(getallstaff)
 router.route("/logout").post(logoutUser)
 router.route("/feedback").post(Feedbackbypatient)
+router.route("/contact").post(Contactrandom)
 
 export default router
