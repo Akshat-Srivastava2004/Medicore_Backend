@@ -1,4 +1,5 @@
 import { Feedback } from "../models/Feedback_model.js";
+import { Patient } from "../models/patient_model.js";
 import { ApiError } from "../util/ApiError.js";
 
 const Feedbackbypatient=async(req,res)=>{
@@ -9,7 +10,9 @@ const Feedbackbypatient=async(req,res)=>{
     if(!message){
         throw new ApiError(401,"message is required ")
     }
-    const Patient=patientname;
+
+    const Patientnew=await Patient.findOne({Name:patientname})
+    const Patient=Patientnew._id;
     const Message=message;
     const feedback=await Feedback.create({
         Patient,
