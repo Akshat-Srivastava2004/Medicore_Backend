@@ -1,7 +1,7 @@
-import { Feedback } from "../models/Feedback_model";
-import { ApiError } from "../util/ApiError";
+import { Feedback } from "../models/Feedback_model.js";
+import { ApiError } from "../util/ApiError.js";
 
-const Feedback=async(req,res)=>{
+const Feedbackbypatient=async(req,res)=>{
     const {patientname,message}=req.body
     if(!Patientname){
         throw new ApiError(401,"Patient should be registered first ")
@@ -21,4 +21,4 @@ const Feedback=async(req,res)=>{
     data:feedback
    })
 }
-export {Feedback}
+export {Feedbackbypatient}
