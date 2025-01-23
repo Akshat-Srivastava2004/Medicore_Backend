@@ -135,7 +135,7 @@ const getallpatient = async (req, res) => {
             Phonenumber: 1, 
             Password: 1, 
             Bloodgroup: 1, 
-            PastReport: 0
+            PastReport: 1
         }); // Specify fields to include
 
         res.status(200).json({
