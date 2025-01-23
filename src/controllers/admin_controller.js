@@ -160,7 +160,7 @@ const getalldoctor = async (req, res) => {
             Phonenumber: 1, 
             Password: 1, 
             Specialization: 1, 
-            Profilephoto: 0
+            Profilephoto: 1
         }); // Specify fields to include
 
         res.status(200).json({
@@ -182,7 +182,7 @@ const getallstaff = async (req, res) => {
             Name: 1, 
             Email: 1, 
             Phonenumber: 1, 
-            Password: 0, 
+            Password: 1, 
             Adharcard: 1, 
             Department: 1
         }); // Specify fields to include
